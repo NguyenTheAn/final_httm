@@ -402,6 +402,10 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.name
+    
+    @property
+    def category(self):
+        return ProductCategory.objects.get(productid = self).categoryid.name
 
 
 class ProductCategory(models.Model):

@@ -55,7 +55,6 @@ class ProductDetailView(EcomMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         url_slug = self.kwargs['slug']
         product = Item.objects.get(slug=url_slug)
-        product.view_count += 1
         product.save()
         context['product'] = product
         return context
