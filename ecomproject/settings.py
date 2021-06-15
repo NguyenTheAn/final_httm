@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.staticfiles',
     "ecomapp",
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware'
+    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
