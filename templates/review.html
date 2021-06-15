@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Review{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-left">Đội Ngũ Chăm Sóc Khách Hàng.</h1>
+    <h5 class="text-left">Chúng tôi luôn sẵn sàng lắng nghe ý kiến đóng góp từ bạn. Chúng tôi sẽ phản hồi trong thời gian sớm nhất</h1>
+    <hr style="height:30px">
+    <div>
+        <form class="row g-3" action="{% url 'ecomapp:review' %}" method="POST">
+            {% csrf_token %}
+            <label class="col-12"> {{ form.content.label }}:</label>
+            <div class="col-12">
+              {{ form.content }}
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">Send</button>
+            </div>
+          </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Danh sách sản phẩm trong giỏ hàng</h3>
+            <a href="{% url 'ecomapp:mycart' %}">Cập nhật sản phẩm</a>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>Sản phẩm</th>
+                        <th>Rate</th>
+                        <th>Số lượng</th>
+                        <th>Tổng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cp in cart.cartline_set.all %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{cp.itemid.name}}</td>
+                        <td>{{cp.itemid.price}}</td>
+                        <td>{{cp.num}}</td>
+                        <td>{{cp.sumPrice}}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <th colspan="4" class="text-right">Tổng</th>
+                        <th>{{cart.total}} Đ</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h3>Thanh toán</h3>
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{form.as_p}}
+                <button class="btn btn-info">Xác nhận</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

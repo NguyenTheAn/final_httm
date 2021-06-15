@@ -1,0 +1,36 @@
+{% extends 'adminpages/adminbase.html' %}
+
+{% block title %}All Orders {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>All Reviews</h3><hr>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>Review ID </th>
+                        <th>Customer</th>
+                        <th>Create at</th>
+                        <th>Reply?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in allreviews %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td><a href="{% url 'ecomapp:adminreviewdetail' review.id %}">#REVIEW_{{review.id}}</a></td>
+                        <td>{{review.customerid.userid.fullnameid.fullname}}</td>
+                        <td>{{review.reviewtime}}</td>
+                        <td>{{review.isReply}}</td>
+            
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

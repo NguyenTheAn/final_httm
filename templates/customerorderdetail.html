@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Chi tiết đơn hàng {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h3>Chi tiết đơn hàng</h3>
+            <hr>
+            <p><span class="font-weight-bold"> ID: </span> #ORDER_{{ord_obj.id}}</p>
+            <p><span class="font-weight-bold">Trạng thái: </span> {{ord_obj.status}}</p>
+            <p><span class="font-weight-bold">Ngày đặt hàng: </span>
+                {{ord_obj.time}}({{ord_obj.time|timesince}} ago)</p>
+            <p><span class="font-weight-bold">Thông tin khách hàng: </span> By {{ord_obj.customerid.userid.fullnameid.fullname}},
+                {{ord_obj.customerid.userid.contactinfoid.phonenumber}}</p>
+            <p><span class="font-weight-bold">Địa chỉ giao hàng: </span> By {{ord_obj.addressid.address}}
+                ({{ord_obj.customerid.userid.contactinfoid.email}})</p>
+            <h4>Ordered Items</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>Item</th>
+                        <th>Rate</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ori in ord_obj.orderitem_set.all %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td><a target="_blank"
+                                href="{% url 'ecomapp:productdetail' ori.itemid.slug %}">{{ori.itemid.name}}({{ori.itemid.id}})</a>
+                        </td>
+                        <td>{{ori.itemid.price}}</td>
+                        <td>{{ori.count}}</td>
+                        <td>{{ori.subTotal}}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <th colspan="4" class="text-right">Total: </th>
+                        <th>{{ord_obj.total|intcomma}} Đ</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

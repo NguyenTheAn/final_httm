@@ -1,0 +1,60 @@
+{% extends 'adminpages/adminbase.html' %}
+{% load humanize %}
+
+{% block title %}Order Detail{% endblock  %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h3>Order Detail</h3>
+            <hr>
+            <p><span class="font-weight-bold">Order ID: </span> #ORDER_{{ord_obj.id}}</p>
+            <p><span class="font-weight-bold">Order Status: </span> {{ord_obj.status}}</p>
+            <p><span class="font-weight-bold">Order On: </span> {{ord_obj.time}}({{ord_obj.time|timesince}} ago)</p>
+            <p><span class="font-weight-bold">Customer Information: </span> By {{ord_obj.customerid.userid.fullnameid.fullname}}, {{ord_obj.customerid.userid.contactinfoid.phonenumber}}</p>
+            <p><span class="font-weight-bold">Shipping Address: </span> By {{ord_obj.addressid.address}} ({{ord_obj.customerid.userid.contactinfoid.email}})</p>
+            <p><span class="font-weight-bold">Payment Information: </span>  Using {{ord_obj.paymentid.method}} ({% if ord_obj.paymentid.isComplete %}Payment Completed{% else %}Not Paid{% endif %})</p>
+            <h4>Ordered Items</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>Item</th>
+                        <th>Rate</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ori in ord_obj.orderitem_set.all %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td><a target="_blank"
+                                href="{% url 'ecomapp:productdetail' ori.itemid.slug %}">{{ori.itemid.name}}({{ori.itemid.id}})</a>
+                        </td>
+                        <td>{{ori.itemid.price}}</td>
+                        <td>{{ori.count}}</td>
+                        <td>{{ori.subTotal}}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <th colspan="4" class="text-right">Total: </th>
+                        <th>{{ord_obj.total|intcomma}} Đ</th>
+                    </tr>
+                </tbody>
+            </table>
+            <form action="{% url 'ecomapp:adminorderstatuschange' ord_obj.id %}" method="POST">
+                {% csrf_token %}
+                <select name="status">
+                    {% for i, j in allstatus %}
+                    <option value="{{i}}" {% if i == ord_obj.order_status %}selected{% endif %}>{{j}}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-info">Change</button>
+                
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

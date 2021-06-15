@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Đăng kí tài khoản khách hàng{% endblock %}
+
+{% block content %}
+<style>
+    .errorlist {
+        color: red;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <h3>Đăng kí</h3>
+            <hr>
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{form.as_p}}
+                <button class="btn btn-primary">Đăng kí</button>
+            </form>
+            <p> Bạn đã có tài khoản? <a href="{% url 'ecomapp:customerlogin' %}">Đăng nhập </a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
