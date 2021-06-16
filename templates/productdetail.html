@@ -26,9 +26,35 @@
             <h5>Giá: {{product.price}}</h5>
             <a href="{% url 'ecomapp:addtocart' product.id %}" class="btn btn-info">Add To Cart</a>
             <hr>
-            <p>{{product.description}}</p>
+            <p>Mô tả: {{product.description}}</p>
         </div>
     </div>
-
+    <hr>
+    <h3>Bình Luận</h3>
+    <div class="col-md-4">
+        <div class="col-12">
+            {% for feedback in feedbacks %}
+            <h4>{{feedback.customerid.userid.fullnameid.fullname}}:</h4>
+            <textarea readonly = True style = "resize: none;" rows="2" cols="50">{{feedback.content}} &#10;Rate: {{feedback.rate}} Star</textarea>
+            {% endfor %}
+        </div>
+        <form class="row g-3" action="{% url 'ecomapp:productdetail' product.slug %}" method="POST">
+            {% csrf_token %}
+            <div class="col-12" style = "display: table; clear: both;">
+                <div style = "float: left; left: 30px">
+                    <label> {{ form.content.label }}:</label>
+                    {{ form.content }}
+                </div>
+                <div style = "float: left; left: 30px">
+                    <label> {{ form.rating.label }}:</label>
+                    {{ form.rating }}
+                </div>
+            </div>
+            
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">Send</button>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

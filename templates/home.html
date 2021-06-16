@@ -5,8 +5,8 @@
 {% block content %}
 <div class="container">
 
-    <h1 class="text-center">Chào mừng đến với sàn thương mại điện tử của chúng tôi. </h1>
-    <hr>
+    <!-- <h1 class="text-center">Chào mừng đến với sàn thương mại điện tử của chúng tôi. </h1> -->
+    <!-- <hr> -->
     <div class="row mt-3">
         {% for p in product_list %}
         <div class="col-md-3 card">
@@ -15,6 +15,12 @@
                 <img src="{{p.image.url}}" alt="" class="img-fluid" style="height: 200px; object-fit: contain;">
                 <p class="mt-3">Giá: {{p.price}}</p>
                 <a href="{% url 'ecomapp:addtocart' p.id %}" class="btn btn-primary">Thêm vào giỏ</a>
+                
+                {% if p in wishListItem %}
+                <a href="{% url 'ecomapp:updateWishList' p.id %}?action=rmv" class="material-icons col-md-4 "> favorite </a>
+                {% else %}
+                <a href="{% url 'ecomapp:updateWishList' p.id %}?action=add" class="material-icons col-md-4 "> favorite_border </a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

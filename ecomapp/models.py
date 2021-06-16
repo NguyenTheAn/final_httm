@@ -163,7 +163,7 @@ class Customerreview(models.Model):
     customerid = models.ForeignKey(Customer, models.CASCADE, db_column='CustomerID')  # Field name made lowercase.
     content = models.CharField(db_column='Content', max_length=255, blank=True, null=True)  # Field name made lowercase.
     reviewtime = models.TimeField(db_column='ReviewTime', blank=True, null=True)  # Field name made lowercase.
-    isReply = models.BooleanField(blank=True, null=True)
+    isReply = models.BooleanField(default=False)
 
     class Meta:
         
@@ -299,6 +299,7 @@ class Messagesession(models.Model):
         db_table = 'messagesession'
 
 class Orderitem(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)
     orderid = models.ForeignKey("Order", models.CASCADE, db_column='OrderID')  # Field name made lowercase.
     count = models.IntegerField(blank=True, null=True)
     itemid = models.ForeignKey(Item, models.CASCADE, db_column='ItemID')  # Field name made lowercase.
@@ -306,6 +307,7 @@ class Orderitem(models.Model):
     class Meta:
         
         db_table = 'orderitem'
+
     @property
     def subTotal(self):
         return self.count*self.itemid.price

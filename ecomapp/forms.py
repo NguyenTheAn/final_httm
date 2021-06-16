@@ -17,6 +17,13 @@ class CheckoutForm(forms.ModelForm):
         fields = ["addressid", "voucherid",
                   "paymentMethod"]
 
+class FeedBackForm(forms.ModelForm):
+    content = forms.CharField(label = "Nội Dung", widget=forms.Textarea(attrs={'rows':2, 'cols':70}))
+    rating = forms.TypedChoiceField(choices=[(x, x) for x in range(1, 6)], coerce=int, help_text = 'Units: ')
+    class Meta:
+        model = Feedback
+        fields = ["content", "rating"]
+
 class ReviewForm(forms.ModelForm):
     content = forms.CharField(label = "Nội Dung", widget=forms.Textarea(attrs={'rows':6, 'cols':100}))
     class Meta:

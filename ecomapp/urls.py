@@ -11,6 +11,7 @@ urlpatterns = [
     path("review/", SendReview.as_view(), name="review"),
     path("contact-us/", ContactView.as_view(), name="contact"),
     path("all-products/", AllProductsView.as_view(), name="allproducts"),
+    path("update-wishlist-<int:pro_id>/", UpdateToWishList.as_view(), name="updateWishList"),
     path("product/<slug:slug>/", ProductDetailView.as_view(), name="productdetail"),
 
     path("add-to-cart-<int:pro_id>/", AddToCartView.as_view(), name="addtocart"),

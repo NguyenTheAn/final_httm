@@ -30,12 +30,48 @@ class HomeView(EcomMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['myname'] = "Banana"
         all_products = Item.objects.all().order_by("-id")
         paginator = Paginator(all_products, 8)
         page_number = self.request.GET.get('page')
         product_list = paginator.get_page(page_number)
         context['product_list'] = product_list
+        if self.request.user.is_authenticated and Customer.objects.filter(userid__accountid__user = self.request.user).exists():
+            customer = Customer.objects.get(userid__accountid__user = self.request.user)
+            if Wishlist.objects.filter(customerid = customer).exists():
+                wishlist = Wishlist.objects.get(customerid = customer)
+                wishListItem = [wishlistline.itemid for wishlistline in Wishlistline.objects.filter(wishlistid = wishlist)]
+                context['wishListItem'] = wishListItem
+            else:
+                wishList = Wishlist.objects.create(customerid = customer)
+                wishList.save()
+                context['wishListItem'] = []
+        return context
+
+class UpdateToWishList(EcomMixin, TemplateView):
+    template_name = "home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        action = self.request.GET.get("action")
+        pro_id = self.kwargs["pro_id"]
+        all_products = Item.objects.all().order_by("-id")
+        paginator = Paginator(all_products, 8)
+        page_number = self.request.GET.get('page')
+        product_list = paginator.get_page(page_number)
+        context['product_list'] = product_list
+        if self.request.user.is_authenticated and Customer.objects.filter(userid__accountid__user = self.request.user).exists():
+            item = Item.objects.get(id = pro_id)
+            customer = Customer.objects.get(userid__accountid__user = self.request.user)
+            wishlist = Wishlist.objects.get(customerid = customer)
+            if action == "add":
+                wishlistline = Wishlistline.objects.create(wishlistid = wishlist, itemid = item)
+                wishlistline.save()
+            else:
+                wishlistline = Wishlistline.objects.get(wishlistid = wishlist, itemid = item)
+                wishlistline.delete()
+            wishListItem = [wishlistline.itemid for wishlistline in Wishlistline.objects.filter(wishlistid = wishlist)]
+            context['wishListItem'] = wishListItem
+
         return context
 
 
@@ -48,17 +84,29 @@ class AllProductsView(EcomMixin, TemplateView):
         return context
 
 
-class ProductDetailView(EcomMixin, TemplateView):
-    template_name = "productdetail.html"
+class ProductDetailView(View):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        url_slug = self.kwargs['slug']
+    def get(self, request, *args, **kwargs):
+        form = FeedBackForm()
+        url_slug = kwargs['slug']
         product = Item.objects.get(slug=url_slug)
-        product.save()
-        context['product'] = product
-        return context
+        feedbacks = Feedback.objects.filter(itemid = product)
+        context = {'form': form, "product": product, "feedbacks": feedbacks}
+        return render(request, 'productdetail.html', context)
 
+    def post(self, request, *args, **kwargs):
+        form = FeedBackForm(data=request.POST)
+        if form.is_valid():
+            content = form.cleaned_data['content']
+            rate = form.cleaned_data['rating']
+            url_slug = kwargs['slug']
+            product = Item.objects.get(slug=url_slug)
+            customer = Customer.objects.get(userid__accountid__user = request.user)
+            feedback = Feedback.objects.create(itemid = product, customerid = customer, content = content, rate = rate)
+            feedback.save()
+            feedbacks = Feedback.objects.filter(itemid = product)
+            context = {'form': FeedBackForm(), "product": product, "feedbacks": feedbacks}
+        return render(request, 'productdetail.html', context)
 
 class AddToCartView(EcomMixin, TemplateView):
     template_name = "addtocart.html"
@@ -141,18 +189,19 @@ class MyCartView(EcomMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        cart_id = self.request.session.get("cart_id", None)
-        if cart_id:
-            cart = Shoppingcart.objects.get(id=cart_id)
-        else:
-            customer = Customer.objects.get(userid__accountid__user = self.request.user)
-            if Shoppingcart.objects.filter(customerid = customer).exists():
-                cart = Shoppingcart.objects.get(customerid = customer)
+        if self.request.user.is_authenticated and Customer.objects.filter(userid__accountid__user = self.request.user).exists():
+            cart_id = self.request.session.get("cart_id", None)
+            if cart_id:
+                cart = Shoppingcart.objects.get(id=cart_id)
             else:
-                cart = Shoppingcart.objects.create(customerid = customer)
-        cartline = Cartline.objects.filter(shoppingcartid = cart)
-        context['cartline'] = cartline
-        context['cart'] = cart
+                customer = Customer.objects.get(userid__accountid__user = self.request.user)
+                if Shoppingcart.objects.filter(customerid = customer).exists():
+                    cart = Shoppingcart.objects.get(customerid = customer)
+                else:
+                    cart = Shoppingcart.objects.create(customerid = customer)
+            cartline = Cartline.objects.filter(shoppingcartid = cart)
+            context['cartline'] = cartline
+            context['cart'] = cart
         return context
 
 
@@ -404,6 +453,9 @@ class CustomerProfileView(TemplateView):
         context['customer'] = customer
         orders = Order.objects.filter(customerid=customer).order_by("-id")
         context["orders"] = orders
+        wishlist = Wishlist.objects.get(customerid = customer)
+        wishListItem = [wishlistline.itemid for wishlistline in Wishlistline.objects.filter(wishlistid = wishlist)]
+        context['wishListItem'] = wishListItem
         return context
 
 
@@ -563,6 +615,8 @@ class AdminReplyReviewView(AdminRequiredMixin, CreateView):
     def form_valid(self, form):
         staff = Staffs.objects.get(userid__accountid__user = self.request.user)
         review = Customerreview.objects.get(id = self.request.session['review_id'])
+        review.isReply = True
+        review.save()
         del self.request.session['review_id']
         message = form.cleaned_data.get("content")
         form.instance.customerreviewid = review
