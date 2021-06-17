@@ -4,6 +4,10 @@
 
 {% block content %}
 <div class="container">
+    {% if error %}
+    <h3>Vui lòng đăng nhập trước khi mua hàng</h3>
+    {% else %}
     <h3>Sản phẩm được thêm vào giỏ thành công.</h3>
+    {% endif %}
 </div>
 {% endblock %}

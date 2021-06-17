@@ -117,34 +117,38 @@ class AddToCartView(EcomMixin, TemplateView):
         product_id = self.kwargs['pro_id']
         # get product
         product_obj = Item.objects.get(id=product_id)
-        customer = Customer.objects.get(userid__accountid__user = self.request.user)
-        # check if cart exists
-        cart_id = self.request.session.get("cart_id", None)
-        if cart_id:
-            cart_obj = Shoppingcart.objects.get(id=cart_id)
-            this_product_in_cart = Cartline.objects.filter(itemid = product_obj)
+        if self.request.user.is_authenticated and Customer.objects.filter(userid__accountid__user = self.request.user).exists():
+            customer = Customer.objects.get(userid__accountid__user = self.request.user)
+            # check if cart exists
+            cart_id = self.request.session.get("cart_id", None)
+            if cart_id:
+                cart_obj = Shoppingcart.objects.get(id=cart_id)
+                this_product_in_cart = Cartline.objects.filter(itemid = product_obj)
 
-            # item already exists in cart
-            if this_product_in_cart.exists():
-                cartproduct = this_product_in_cart.last()
-                cartproduct.num += 1
-                cartproduct.save()
-                cart_obj.save()
-            # new item is added in cart
+                # item already exists in cart
+                if this_product_in_cart.exists():
+                    cartproduct = this_product_in_cart.last()
+                    cartproduct.num += 1
+                    cartproduct.save()
+                    cart_obj.save()
+                # new item is added in cart
+                else:
+                    cartproduct = Cartline.objects.create(
+                        shoppingcartid=cart_obj, itemid=product_obj, num=1)
+                    cart_obj.save()
+
             else:
+                if Shoppingcart.objects.filter(customerid = customer).exists():
+                    cart_obj = Shoppingcart.objects.get(customerid = customer)
+                else:
+                    cart_obj = Shoppingcart.objects.create(customerid = customer)
+                self.request.session['cart_id'] = cart_obj.id
                 cartproduct = Cartline.objects.create(
                     shoppingcartid=cart_obj, itemid=product_obj, num=1)
                 cart_obj.save()
-
+            context["error"] = False
         else:
-            if Shoppingcart.objects.filter(customerid = customer).exists():
-                cart_obj = Shoppingcart.objects.get(customerid = customer)
-            else:
-                cart_obj = Shoppingcart.objects.create(customerid = customer)
-            self.request.session['cart_id'] = cart_obj.id
-            cartproduct = Cartline.objects.create(
-                shoppingcartid=cart_obj, itemid=product_obj, num=1)
-            cart_obj.save()
+            context["error"] = True
         return context
 
 
