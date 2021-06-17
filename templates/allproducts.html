@@ -11,14 +11,16 @@
     <hr>
     <div class="row">
         {% for p in cat.productcategory_set.all %}
-        <div class="col-md-3">
-            <div class="m-4">
-                <h4><a href="{% url 'ecomapp:productdetail' p.productid.item_set.all.last.slug %}">{{p.productid.name}}</a></h4>
-                <img src="{{p.productid.item_set.all.last.image.url}}" alt="" class="img-fluid" style="height: 2500; object-fit: cover;">
-                <p class="mt-3">Giá: {{p.productid.item_set.all.last.price}}</p>
-                <a href="{% url 'ecomapp:addtocart' p.productid.item_set.all.last.id %}" class="btn btn-primary">Thêm vào giỏ</a>
+            {% if p.productid.item_set.all.last.isUpload %}
+            <div class="col-md-3">
+                <div class="m-4">
+                    <h4><a href="{% url 'ecomapp:productdetail' p.productid.item_set.all.last.slug %}">{{p.productid.name}}</a></h4>
+                    <img src="{{p.productid.item_set.all.last.image.url}}" alt="" class="img-fluid" style="height: 2500; object-fit: cover;">
+                    <p class="mt-3">Giá: {{p.productid.item_set.all.last.price}}</p>
+                    <a href="{% url 'ecomapp:addtocart' p.productid.item_set.all.last.id %}" class="btn btn-primary">Thêm vào giỏ</a>
+                </div>
             </div>
-        </div>
+            {% endif %}
         {% endfor %}
     </div>
     {% endfor %}

@@ -209,24 +209,16 @@ class CheckoutView(EcomMixin, CreateView):
     template_name = "checkout.html"
     form_class = CheckoutForm
     success_url = reverse_lazy("ecomapp:home")
-
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.account:
-            pass
-        else:
+        if not (request.user.is_authenticated and request.user.account):
             return redirect("/login/?next=/checkout/")
         return super().dispatch(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         cart_id = self.request.session.get("cart_id", None)
-        if cart_id:
-            cart_obj = Shoppingcart.objects.get(id=cart_id)
-        else:
-            cart_obj = None
+        cart_obj = Shoppingcart.objects.get(id=cart_id) if cart_id else None
         context['cart'] = cart_obj
         return context
-
     def form_valid(self, form):
         cart_id = self.request.session.get("cart_id")
         if cart_id:
@@ -242,9 +234,7 @@ class CheckoutView(EcomMixin, CreateView):
             convert ={"1": "Cash",
                       "2": "Banking",
                       "3": "QRCode"}
-                    
             payment = Payment.objects.create(isComplete = False, method = convert[method])
-
             form.instance.customerid = customer
             form.instance.taxid = Tax.objects.get(id = 1)
             form.instance.voucherid = form.cleaned_data.get("voucherid")
@@ -259,95 +249,9 @@ class CheckoutView(EcomMixin, CreateView):
                 orderitem = Orderitem.objects.create(orderid = order, itemid = cartline.itemid, count = cartline.num)
                 orderitem.save()
                 cartline.delete()
-            
-            # if pm == "Khalti":
-            #     return redirect(reverse("ecomapp:khaltirequest") + "?o_id=" + str(order.id))
-            # elif pm == "Esewa":
-            #     return redirect(reverse("ecomapp:esewarequest") + "?o_id=" + str(order.id))
         else:
             return redirect("ecomapp:home")
         return super().form_valid(form)
-
-
-# class KhaltiRequestView(View):
-#     def get(self, request, *args, **kwargs):
-#         o_id = request.GET.get("o_id")
-#         order = Order.objects.get(id=o_id)
-#         context = {
-#             "order": order
-#         }
-#         return render(request, "khaltirequest.html", context)
-
-
-# class KhaltiVerifyView(View):
-#     def get(self, request, *args, **kwargs):
-#         token = request.GET.get("token")
-#         amount = request.GET.get("amount")
-#         o_id = request.GET.get("order_id")
-#         print(token, amount, o_id)
-
-#         url = "https://khalti.com/api/v2/payment/verify/"
-#         payload = {
-#             "token": token,
-#             "amount": amount
-#         }
-#         headers = {
-#             "Authorization": "Key test_secret_key_f59e8b7d18b4499ca40f68195a846e9b"
-#         }
-
-#         order_obj = Order.objects.get(id=o_id)
-
-#         response = requests.post(url, payload, headers=headers)
-#         resp_dict = response.json()
-#         if resp_dict.get("idx"):
-#             success = True
-#             order_obj.payment_completed = True
-#             order_obj.save()
-#         else:
-#             success = False
-#         data = {
-#             "success": success
-#         }
-#         return JsonResponse(data)
-
-
-# class EsewaRequestView(View):
-#     def get(self, request, *args, **kwargs):
-#         o_id = request.GET.get("o_id")
-#         order = Order.objects.get(id=o_id)
-#         context = {
-#             "order": order
-#         }
-#         return render(request, "esewarequest.html", context)
-
-
-# class EsewaVerifyView(View):
-#     def get(self, request, *args, **kwargs):
-#         import xml.etree.ElementTree as ET
-#         oid = request.GET.get("oid")
-#         amt = request.GET.get("amt")
-#         refId = request.GET.get("refId")
-
-#         url = "https://uat.esewa.com.np/epay/transrec"
-#         d = {
-#             'amt': amt,
-#             'scd': 'epay_payment',
-#             'rid': refId,
-#             'pid': oid,
-#         }
-#         resp = requests.post(url, d)
-#         root = ET.fromstring(resp.content)
-#         status = root[0].text.strip()
-
-#         order_id = oid.split("_")[1]
-#         order_obj = Order.objects.get(id=order_id)
-#         if status == "Success":
-#             order_obj.payment_completed = True
-#             order_obj.save()
-#             return redirect("/")
-#         else:
-
-#             return redirect("/esewa-request/?o_id="+order_id)
 
 
 class CustomerRegistrationView(CreateView):
@@ -360,12 +264,21 @@ class CustomerRegistrationView(CreateView):
         password = form.cleaned_data.get("password")
         email = form.cleaned_data.get("email")
         name = form.cleaned_data.get("full_name")
-        address = form.cleaned_data.get("address")
-        fullname = Fullname.objects.create(lastname = name)
+        fn = name.split(" ")[0]
+        ln = name.split(" ")[-1]
+        mn = ""
+        for i in name.split(" ")[1:-1]:
+            mn = mn + i + " "
+        city = form.cleaned_data.get("city")
+        district = form.cleaned_data.get("district")
+        town = form.cleaned_data.get("town")
+        street = form.cleaned_data.get("street")
+        description = form.cleaned_data.get("description")
+        fullname = Fullname.objects.create(lastname = ln, firstname = fn, middlename = mn)
         contact = Contactinfo.objects.create(email = email)
         user_ = User.objects.create_user(username = username, password = password)
         account = Account.objects.create(user = user_)
-        addressid = Address.objects.create(description = address)
+        addressid = Address.objects.create(description = description, city = city, district= district, town =town, street=street)
         user = Users.objects.create(accountid = account, contactinfoid = contact, fullnameid = fullname, addressid = addressid)
         form.instance.userid = user
         login(self.request, user.accountid.user)
@@ -453,11 +366,26 @@ class CustomerProfileView(TemplateView):
         context['customer'] = customer
         orders = Order.objects.filter(customerid=customer).order_by("-id")
         context["orders"] = orders
+        return context
+
+class WishListView(TemplateView):
+    template_name = "wishlist.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        customer = Customer.objects.get(userid__accountid = self.request.user.account)
         wishlist = Wishlist.objects.get(customerid = customer)
         wishListItem = [wishlistline.itemid for wishlistline in Wishlistline.objects.filter(wishlistid = wishlist)]
         context['wishListItem'] = wishListItem
         return context
 
+class ReviewListView(TemplateView):
+    template_name = "reviewlist.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        customer = Customer.objects.get(userid__accountid = self.request.user.account)
+        reviews = Customerreview.objects.filter(customerid = customer)
+        context['reviews'] = reviews
+        return context
 
 class CustomerOrderDetailView(DetailView):
     template_name = "customerorderdetail.html"
@@ -482,7 +410,7 @@ class SearchView(TemplateView):
         context = super().get_context_data(**kwargs)
         kw = self.request.GET.get("keyword")
         results = Item.objects.filter(
-            Q(name__icontains=kw) | Q(description__icontains=kw))
+            Q(productid__name__icontains=kw) | Q(description__icontains=kw))
         context["results"] = results
         return context
 
@@ -575,6 +503,36 @@ class AdminHomeView(AdminRequiredMixin, TemplateView):
             status="Order Received").order_by("-id")
         return context
 
+class AdminProductDetailView(View):
+    template_name = "adminpages/adminproductdetail.html"
+
+    def get(self, request, *args, **kwargs):
+        form = EditProductForm()
+        url_slug = kwargs['slug']
+        product = Item.objects.get(slug=url_slug)
+        form.fields['price'].initial  = product.price
+        form.fields['description'].initial  = product.description
+        context = {'form': form, "product": product}
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        form = EditProductForm(data=request.POST)
+        if form.is_valid():
+            price = form.cleaned_data['price']
+            description = form.cleaned_data['description']
+            url_slug = kwargs['slug']
+            product = Item.objects.get(slug=url_slug)
+            product.price = price
+            product.description = description
+            if request.POST.get("upload", "") == "true":
+                product.isUpload = True
+            else:
+                product.isUpload = False
+            product.save()
+            form.fields['price'].initial  = price
+            form.fields['description'].initial  = description
+            context = {'form': form, "product": product}
+        return render(request, self.template_name, context)
 
 class AdminOrderDetailView(AdminRequiredMixin, DetailView):
     template_name = "adminpages/adminorderdetail.html"
@@ -586,6 +544,16 @@ class AdminOrderDetailView(AdminRequiredMixin, DetailView):
         context["allstatus"] = ORDER_STATUS
         return context
 
+class AdminProductSearchView(TemplateView):
+    template_name = "adminpages/adminsearch.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        kw = self.request.GET.get("keyword")
+        results = Item.objects.filter(
+            Q(productid__name__icontains=kw) | Q(description__icontains=kw))
+        context["results"] = results
+        return context
 
 class AdminOrderListView(AdminRequiredMixin, ListView):
     template_name = "adminpages/adminorderlist.html"
@@ -647,6 +615,16 @@ class AdminProductListView(AdminRequiredMixin, ListView):
     template_name = "adminpages/adminproductlist.html"
     queryset = Item.objects.all().order_by("-id")
     context_object_name = "allproducts"
+
+class AdminProductDeleteView(AdminRequiredMixin, View):
+    template_name = "adminpages/adminproductlist.html"
+    def get(self, request, *args, **kwargs):
+        queryset = Item.objects.all().order_by("-id")
+        pro_id = self.kwargs["pro_id"]
+        item = Item.objects.get(id = pro_id)
+        item.productid.delete()
+        context = {"allproducts":queryset}
+        return render(request, self.template_name, context)
 
 
 class AdminProductCreateView(AdminRequiredMixin, CreateView):

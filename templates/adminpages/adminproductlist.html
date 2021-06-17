@@ -7,6 +7,12 @@
     <div class="row">
         <div class="col-md-12">
             <h3>All Product list</h3><hr>
+            <form class="form-inline my-2 my-lg-0" action="{% url 'ecomapp:adminproductsearch' %}" method="GET">
+                <button class="btn my-2 my-sm-0" type="submit" style="background-color: #cce6ff">Tìm kiếm</button>
+                <input name="keyword" class="form-control mr-sm-2" type="search" placeholder="Search"
+                    aria-label="Search" required>
+            </form>
+            <hr>
             <a href="{% url 'ecomapp:adminproductcreate' %}">Add New Product</a>
             <table class="table table-striped">
                 <thead>
@@ -17,17 +23,22 @@
                         <th>Price</th>
                         <th>Inventory</th>
                         <th>Description</th>
+                        <th>Upload?</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for p in allproducts %}
                     <tr>
                         <td>{{forloop.counter}}</td>
-                        <td>{{p.productid.name}}</td>
+                        <td><a href="{% url 'ecomapp:adminproductdetail' p.slug %}">{{p.productid.name}}</a></td>
                         <td><img src="{{p.image.url}}" style="height: 60px;" alt=""></td>
                         <td>{{p.price}}</td>
                         <td>{{p.productid.num}}</td>
                         <td>{{p.description}}</td>
+                        <td>{{p.isUpload}}</td>
+                        <td><a class="btn btn-info" href="{% url 'ecomapp:adminproductdelete' p.id %}">Delete</a></td>
+                        
                     </tr>
                     {% endfor %}
                 </tbody>

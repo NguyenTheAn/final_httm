@@ -21,12 +21,6 @@ urlpatterns = [
 
     path("checkout/", CheckoutView.as_view(), name="checkout"),
 
-#     path("khalti-request/", KhaltiRequestView.as_view(), name="khaltirequest"),
-#     path("khalti-verify/", KhaltiVerifyView.as_view(), name="khaltiverify"),
-
-#     path("esewa-request/", EsewaRequestView.as_view(), name="esewarequest"),
-#     path("esewa-verify/", EsewaVerifyView.as_view(), name="esewaverify"),
-
     path("register/",
          CustomerRegistrationView.as_view(), name="customerregistration"),
 
@@ -34,6 +28,8 @@ urlpatterns = [
     path("login/", CustomerLoginView.as_view(), name="customerlogin"),
 
     path("profile/", CustomerProfileView.as_view(), name="customerprofile"),
+    path("wishlist/", WishListView.as_view(), name="wishlist"),
+    path("reviewlist/", ReviewListView.as_view(), name="reviewlist"),
     path("profile/order-<int:pk>/", CustomerOrderDetailView.as_view(),
          name="customerorderdetail"),
 
@@ -53,6 +49,7 @@ urlpatterns = [
     path("admin-order/<int:pk>/", AdminOrderDetailView.as_view(),
          name="adminorderdetail"),
 
+    path("admin-product-detail/<slug:slug>/", AdminProductDetailView.as_view(), name="adminproductdetail"),
     path("admin-all-orders/", AdminOrderListView.as_view(), name="adminorderlist"),
 
     path("admin-order-<int:pk>-change/",
@@ -60,6 +57,10 @@ urlpatterns = [
 
     path("admin-product/list/", AdminProductListView.as_view(),
          name="adminproductlist"),
+     path("admin-product/delete-<int:pro_id>", AdminProductDeleteView.as_view(),
+         name="adminproductdelete"),
+     path("admin-product/search/", AdminProductSearchView.as_view(),
+         name="adminproductsearch"),
     path("admin-product/add/", AdminProductCreateView.as_view(),
          name="adminproductcreate"),
 

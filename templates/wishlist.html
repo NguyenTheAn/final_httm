@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Thông tin tài khoản{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Danh Sách Mặt Hàng Yêu Thích</h3>
+            <hr>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>ID</th>
+                        <th>Tên mặt hàng</th>
+                        <th>Ảnh</th>
+                        <th>Giá</th>
+                        <th>Số lượng còn lại</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in wishListItem %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td><a href="{% url 'ecomapp:productdetail' item.slug %}">#PRODUCT_{{item.id}}</a></td>
+                        <td>{{item.productid.name}}</td>
+                        <td><img src="{{item.image.url}}" style="height: 60px;" alt=""></td>
+                        <td>{{item.price}} Đ</td>
+                        <td>{{item.productid.num}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -41,11 +41,15 @@ class CustomerRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
     email = forms.CharField(widget=forms.EmailInput())
     full_name = forms.CharField(widget=forms.TextInput())
-    address = forms.CharField(widget=forms.TextInput())
+    city = forms.CharField(widget=forms.TextInput())
+    district = forms.CharField(widget=forms.TextInput())
+    town = forms.CharField(widget=forms.TextInput())
+    street = forms.CharField(widget=forms.TextInput())
+    description = forms.CharField(widget=forms.TextInput())
 
     class Meta:
         model = Customer
-        fields = ["username", "password", "email", "full_name", "address"]
+        fields = ["username", "password", "email", "full_name", "city", "district","town", "street", "description"]
 
     def clean_username(self):
         uname = self.cleaned_data.get("username")
@@ -72,7 +76,7 @@ class ProductForm(forms.ModelForm):
     name = forms.CharField(label = "Product Name")
     type = forms.CharField(label = "Product Type", widget=forms.Select(choices=TYPE))
     slug = forms.SlugField()
-    price = forms.FloatField(required=False)
+    price = forms.IntegerField(required=False)
     description = forms.CharField()
     images = forms.FileField(required=False, widget=forms.FileInput(attrs={
         "class": "form-control",
@@ -82,6 +86,13 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Item
         fields = ["producer", "manufacturingdate", "expirydate", "name", "type", "slug", "price", "description", "images"]
+
+class EditProductForm(forms.ModelForm):
+    price = forms.IntegerField(required=False)
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':50}))
+    class Meta:
+        model = Item
+        fields= ["price", "description"]
 
 class ImportProductForm(forms.ModelForm):
     supplier = forms.ModelChoiceField(queryset= Supplier.objects.all())

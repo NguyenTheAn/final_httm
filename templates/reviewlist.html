@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Thông tin tài khoản{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Danh Sách Mặt Hàng Yêu Thích</h3>
+            <hr>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>ID</th>
+                        <th>Nội Dung</th>
+                        <th>Phản Hồi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviews %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td><a href="">#REVIEW_{{review.id}}</a></td>
+                        <td>{{review.content}}</td>
+                        <td>{{review.reviewreply_set.all.last.message}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
