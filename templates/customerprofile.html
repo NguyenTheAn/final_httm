@@ -37,7 +37,7 @@
                         <td>{{forloop.counter}}</td>
                         <td><a href="{% url 'ecomapp:customerorderdetail' ord.pk %}"> #ORDER_{{ord.id}}</a></td>
                         <td>{{ord.total}}</td>
-                        <td>{{ord.time}} ago</td>
+                        <td>{{ord.time}}</td>
                         <td>{{ord.status}}</td>
                     </tr>
                     {% endfor %}
