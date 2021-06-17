@@ -36,9 +36,24 @@ class ReplyReviewForm(forms.ModelForm):
         model = Reviewreply
         fields = ["content"]
 
+class EditProfileForm(forms.ModelForm):
+    username = forms.CharField(widget=forms.TextInput())
+    phonenumber = forms.CharField(widget=forms.TextInput())
+    email = forms.CharField(widget=forms.EmailInput())
+    full_name = forms.CharField(widget=forms.TextInput())
+    city = forms.CharField(widget=forms.TextInput())
+    district = forms.CharField(widget=forms.TextInput())
+    town = forms.CharField(widget=forms.TextInput())
+    street = forms.CharField(widget=forms.TextInput())
+    description = forms.CharField(widget=forms.TextInput())
+    class Meta:
+        model = Customer
+        fields = ["username", "phonenumber", "email", "full_name", "city", "district","town", "street", "description"]
+
 class CustomerRegistrationForm(forms.ModelForm):
     username = forms.CharField(widget=forms.TextInput())
     password = forms.CharField(widget=forms.PasswordInput())
+    phonenumber = forms.CharField(widget=forms.TextInput())
     email = forms.CharField(widget=forms.EmailInput())
     full_name = forms.CharField(widget=forms.TextInput())
     city = forms.CharField(widget=forms.TextInput())
@@ -49,7 +64,7 @@ class CustomerRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Customer
-        fields = ["username", "password", "email", "full_name", "city", "district","town", "street", "description"]
+        fields = ["username", "password", "phonenumber", "email", "full_name", "city", "district","town", "street", "description"]
 
     def clean_username(self):
         uname = self.cleaned_data.get("username")

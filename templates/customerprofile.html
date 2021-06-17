@@ -17,6 +17,9 @@
             <br> 
             <br> 
             <a href = "{% url 'ecomapp:reviewlist' %}">Đánh Giá Của Tôi</a> 
+            <br>
+            <br>
+            <a href = "{% url 'ecomapp:editprofile' customer.userid.id %}">Chỉnh Sửa Thông Tin Cá Nhân</a> 
         </div>
         <div class="col-md-8">
             <h3>Những đơn hàng trước</h3>
@@ -24,7 +27,7 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>SN</th>
+                        <th>STT</th>
                         <th>ID</th>
                         <th>Số tiền</th>
                         <th>Ngày đặt hàng</th>

@@ -11,12 +11,12 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>SN</th>
+                        <th>STT</th>
                         <th>ID</th>
                         <th>Tên mặt hàng</th>
                         <th>Ảnh</th>
                         <th>Giá</th>
-                        <th>Số lượng còn lại</th>
+                        <th>Tình Trạng</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,7 +27,7 @@
                         <td>{{item.productid.name}}</td>
                         <td><img src="{{item.image.url}}" style="height: 60px;" alt=""></td>
                         <td>{{item.price}} Đ</td>
-                        <td>{{item.productid.num}}</td>
+                        <td>Còn Hàng</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -83,6 +83,64 @@ class AllProductsView(EcomMixin, TemplateView):
         context['allcategories'] = Category.objects.all()
         return context
 
+class EditProfileView(View):
+    template_name = "customerprofileedit.html"
+    def get(self, request, *args, **kwargs):
+        form = EditProfileForm()
+        usr_id = kwargs['usr_id']
+        user = Users.objects.get(id = usr_id)
+        form.fields['username'].initial  = user.accountid.user.username
+        form.fields['phonenumber'].initial  = user.contactinfoid.phonenumber
+        form.fields['email'].initial  = user.contactinfoid.email
+        form.fields['full_name'].initial  = user.fullnameid.fullname
+        form.fields['city'].initial  = user.addressid.city
+        form.fields['district'].initial  = user.addressid.district
+        form.fields['town'].initial  = user.addressid.town
+        form.fields['street'].initial  = user.addressid.street
+        form.fields['description'].initial  = user.addressid.description
+        context = {'form': form}
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        form = EditProfileForm(data=request.POST)
+        if form.is_valid():
+            usr_id = kwargs['usr_id']
+            user = Users.objects.get(id = usr_id)
+            username = form.cleaned_data.get("username")
+            phonenumber = form.cleaned_data.get("phonenumber")
+            email = form.cleaned_data.get("email")
+            name = form.cleaned_data.get("full_name")
+            fn = name.split(" ")[0]
+            ln = name.split(" ")[-1]
+            mn = ""
+            for i in name.split(" ")[1:-1]:
+                mn = mn + i + " "
+            city = form.cleaned_data.get("city")
+            district = form.cleaned_data.get("district")
+            town = form.cleaned_data.get("town")
+            street = form.cleaned_data.get("street")
+            description = form.cleaned_data.get("description")
+            user.accountid.user.username = username
+            user.contactinfoid.phonenumber = phonenumber
+            user.contactinfoid.email = email
+            user.fullnameid.firstname = fn
+            user.fullnameid.middlename = mn
+            user.fullnameid.lastname = ln
+            user.addressid.city = city
+            user.addressid.district = district
+            user.addressid.town = town
+            user.addressid.street = street
+            user.addressid.description = description
+            
+            user.accountid.user.save()
+            user.contactinfoid.save()
+            user.fullnameid.save()
+            user.addressid.save()
+            user.save()
+
+            form.instance.userid = user
+            context = {"customer" : Customer.objects.get(userid = user)}
+        return render(request, "customerprofile.html", context)
 
 class ProductDetailView(View):
 
@@ -266,6 +324,7 @@ class CustomerRegistrationView(CreateView):
     def form_valid(self, form):
         username = form.cleaned_data.get("username")
         password = form.cleaned_data.get("password")
+        phonenumber = form.cleaned_data.get("phonenumber")
         email = form.cleaned_data.get("email")
         name = form.cleaned_data.get("full_name")
         fn = name.split(" ")[0]
@@ -279,7 +338,7 @@ class CustomerRegistrationView(CreateView):
         street = form.cleaned_data.get("street")
         description = form.cleaned_data.get("description")
         fullname = Fullname.objects.create(lastname = ln, firstname = fn, middlename = mn)
-        contact = Contactinfo.objects.create(email = email)
+        contact = Contactinfo.objects.create(email = email, phonenumber = phonenumber)
         user_ = User.objects.create_user(username = username, password = password)
         account = Account.objects.create(user = user_)
         addressid = Address.objects.create(description = description, city = city, district= district, town =town, street=street)
@@ -301,10 +360,15 @@ class CustomerLogoutView(View):
         logout(request)
         return redirect("ecomapp:home")
 
+class ReviewSuccessView(TemplateView):
+    template_name = "reviewsuccess.html"
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
+
 class SendReview(CreateView):
     template_name = "review.html"
     form_class = ReviewForm
-    success_url = reverse_lazy("ecomapp:home")
+    success_url = reverse_lazy("ecomapp:reviewsuccess")
     def form_valid(self, form):
         customer = Customer.objects.get(userid__accountid__user = self.request.user)
         content = form.cleaned_data.get("content")

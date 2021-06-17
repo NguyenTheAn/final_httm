@@ -30,10 +30,12 @@ urlpatterns = [
     path("profile/", CustomerProfileView.as_view(), name="customerprofile"),
     path("wishlist/", WishListView.as_view(), name="wishlist"),
     path("reviewlist/", ReviewListView.as_view(), name="reviewlist"),
+    path("review-success/", ReviewSuccessView.as_view(), name="reviewsuccess"),
     path("profile/order-<int:pk>/", CustomerOrderDetailView.as_view(),
          name="customerorderdetail"),
 
     path("search/", SearchView.as_view(), name="search"),
+    path("edit-profile/<int:usr_id>/", EditProfileView.as_view(), name="editprofile"),
 
     path("forgot-password/", PasswordForgotView.as_view(), name="passworforgot"),
     path("password-reset/<email>/<token>/",
