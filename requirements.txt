@@ -10,4 +10,4 @@ gunicorn==20.0.4
 psycopg2-binary==2.8.6
 whitenoise==5.2.0
 django-cors-headers
-djang0-livereload-server
+django-livereload-server
