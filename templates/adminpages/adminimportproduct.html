@@ -6,7 +6,8 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10 mx-auto">
-            <h3>Add New product</h3>
+            <h3>Import product</h3>
+            <a href = "{% url 'ecomapp:adminimportingrecordlist' %}">Xem Danh Sách Hoá Đơn</a>
             <hr>
             <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}

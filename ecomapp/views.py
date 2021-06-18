@@ -772,6 +772,11 @@ class AdminProductListView(AdminRequiredMixin, ListView):
     queryset = Item.objects.all().order_by("-id")
     context_object_name = "allproducts"
 
+class AdminImprotingrecordListView(AdminRequiredMixin, ListView):
+    template_name = "adminpages/adminimportingrecordlist.html"
+    queryset = Importingrecord.objects.all().order_by("-id")
+    context_object_name = "allrecords"
+
 class AdminProductDeleteView(AdminRequiredMixin, View):
     template_name = "adminpages/adminproductlist.html"
     def get(self, request, *args, **kwargs):
@@ -819,7 +824,11 @@ class AdminImportProductView(AdminRequiredMixin, CreateView):
         supplier = form.cleaned_data.get("supplier")
         product = form.cleaned_data.get("product")
         number = form.cleaned_data.get("number")
+        price = form.cleaned_data.get("price")
         product.num += number
+        item = Item.objects.get(productid = product)
+        item.price = price*(1+0.1)
+        item.save()
         product.save()
         staff = Staffs.objects.get(userid__accountid__user = self.request.user)
         date = datetime.datetime.now()
@@ -827,4 +836,6 @@ class AdminImportProductView(AdminRequiredMixin, CreateView):
         form.instance.productid = product
         form.instance.staffid = staff
         form.instance.date = date
+        form.instance.num = number
+        form.instance.price = price
         return super().form_valid(form)

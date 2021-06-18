@@ -1,0 +1,39 @@
+{% extends 'adminpages/adminbase.html' %}
+{% block title %}All Products{% endblock %}
+
+
+{% block content %}
+<div class="container"> 
+    <div class="row">
+        <div class="col-md-12">
+            <h3>All Improting Record</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Supplier</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Number</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in allrecords %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{record.supplierid}}</td>
+                        <td>{{record.productid}}</td>
+                        <td>{{record.price}}</td>
+                        <td>{{record.num}}</td>
+                        <td>{{record.total}}</td>
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

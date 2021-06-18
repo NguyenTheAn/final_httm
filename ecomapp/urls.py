@@ -64,6 +64,8 @@ urlpatterns = [
 
     path("admin-product/list/", AdminProductListView.as_view(),
          name="adminproductlist"),
+     path("admin-importingrecord/list/", AdminImprotingrecordListView.as_view(),
+         name="adminimportingrecordlist"),
      path("admin-product/delete-<int:pro_id>", AdminProductDeleteView.as_view(),
          name="adminproductdelete"),
      path("admin-product/search/", AdminProductSearchView.as_view(),

@@ -285,10 +285,16 @@ class Importingrecord(models.Model):
     productid = models.ForeignKey('Product', models.CASCADE, db_column='ProductID')  # Field name made lowercase.
     date = models.DateField(db_column='Date', blank=True, null=True)  # Field name made lowercase.
     staffid = models.ForeignKey('Staffs', models.CASCADE, db_column='StaffID')  # Field name made lowercase.
+    num = models.IntegerField(db_column='Num', blank=True, null=True)
+    price = models.IntegerField(db_column='Price', blank=True, null=True)
 
     class Meta:
         
         db_table = 'importingrecord'
+
+    @property
+    def total(self):
+        return self.price*self.num
 
 
 class Item(models.Model):
