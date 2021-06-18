@@ -9,6 +9,34 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+
+# import gensim.models.keyedvectors as word2vec
+# from keras.models import load_model
+# import numpy as np
+# model_embedding = word2vec.KeyedVectors.load('./word.model')
+
+# words_label = []
+
+# def pre_process(text):
+#     return text
+
+# def comment_embedding(comment):
+#     max_seq = 200
+#     embedding_size = 128
+#     matrix = np.zeros((max_seq, embedding_size))
+#     words = comment.split()
+#     lencmt = len(words)
+
+#     for i in range(max_seq):
+#         indexword = i % lencmt
+#         if (max_seq - i < lencmt):
+#             break
+#         if(words[indexword] in words_label):
+#             matrix[i] = model_embedding[words[indexword]]
+#     matrix = np.array(matrix)
+#     return matrix
+
+
 class Account(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -155,7 +183,8 @@ class CustomerShippingaddress(models.Model):
     class Meta:
         
         db_table = 'customer_shippingaddress'
-        unique_together = (('customerid', 'shippingaddressid'),)
+        unique_together = (('customerid', 'shippingaddressid'))
+
 
 
 class Customerreview(models.Model):
@@ -169,6 +198,20 @@ class Customerreview(models.Model):
         
         db_table = 'customerreview'
 
+    # @property
+    # def sentiment(self):
+    #     model_sentiment = load_model("models.h5")
+    #     text = pre_process(self.content)
+    #     maxtrix_embedding = np.expand_dims(comment_embedding(text), axis=0)
+    #     maxtrix_embedding = np.expand_dims(maxtrix_embedding, axis=3)
+    #     result = model_sentiment.predict(maxtrix_embedding)
+    #     result = np.argmax(result)
+    #     labeled = {
+    #         0 : "Negative",
+    #         1 : "Neutral",
+    #         2 : "Positive"
+    #     }
+    #     return labeled[result]
 
 class Electronic(models.Model):
     devicetype = models.CharField(db_column='DeviceType', max_length=255, blank=True, null=True)  # Field name made lowercase.
@@ -334,11 +377,11 @@ class Order(models.Model):
         return sum
 
 ORDER_STATUS = (
-    ("Order Received", "Order Received"),
-    ("Order Processing", "Order Processing"),
-    ("On the way", "On the way"),
-    ("Order Completed", "Order Completed"),
-    ("Order Canceled", "Order Canceled"),
+    ("Đã tiếp nhận đơn hàng", "Đã tiếp nhận đơn hàng"),
+    ("Đơn hàng đang được xử lý", "Đơn hàng đang được xử lý"),
+    ("Đơn hàng đang đƯợc giao", "Đơn hàng đang đƯợc giao"),
+    ("Đơn hàng đã hoàn thành", "Đơn hàng đã hoàn thành"),
+    ("Đơn hàng đã bị huỷ", "Đơn hàng đã bị huỷ"),
 )
 
 

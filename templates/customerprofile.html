@@ -13,6 +13,9 @@
             <p><span class="font-weight-bold">Email: </span> {{customer.userid.contactinfoid.email}}</p>
             <p><span class="font-weight-bold">Địa chỉ: </span> {{customer.userid.addressid.address}}</p>
             <br> 
+            <a href = "{% url 'ecomapp:shippingaddresslist' customer.id %}">Chỉnh Sửa Sổ Địa Chỉ</a> 
+            <br>
+            <br>
             <a href = "{% url 'ecomapp:wishlist' %}">Yêu Thích</a>
             <br> 
             <br> 

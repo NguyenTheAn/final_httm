@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Thông tin tài khoản{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Sổ Địa Chỉ Của Tôi</h3>
+            <hr>
+            <a href="{% url 'ecomapp:shippingaddresscreate' customer.id %}">Add New Address</a>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>ID</th>
+                        <th>Địa Chỉ</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for shippingaddress in shippingaddresslist %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td><a href="{% url 'ecomapp:shippingaddressedit' customer.id shippingaddress.addressid.id %}">#ADDRESS_{{shippingaddress.id}}</a></td>
+                        <td>{{shippingaddress.addressid.address}}</td>
+                        <td><a class="btn btn-info" href="{% url 'ecomapp:shippingaddressdelete' customer.id shippingaddress.addressid.id %}">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

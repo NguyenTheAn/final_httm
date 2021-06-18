@@ -142,6 +142,94 @@ class EditProfileView(View):
             context = {"customer" : Customer.objects.get(userid = user)}
         return render(request, "customerprofile.html", context)
 
+class ShippingAddressListView(View):
+    template_name = "shippingaddresslist.html"
+    def get(self, request, *args, **kwargs):
+        cus_id = kwargs['cus_id']
+        customer = Customer.objects.get(id = cus_id)
+        shippingaddresslist = [customeraddress.shippingaddressid for customeraddress in CustomerShippingaddress.objects.filter(customerid = customer)]
+        context = {"shippingaddresslist" : shippingaddresslist, "customer" : customer}
+        return render(request, self.template_name, context)
+
+class ShippingAddressDeleteView(View):
+    template_name = "shippingaddresslist.html"
+    def get(self, request, *args, **kwargs):
+        addr_id = kwargs['addr_id']
+        address = Address.objects.get(id = addr_id)
+        address.delete()
+        cus_id = kwargs['cus_id']
+        customer = Customer.objects.get(id = cus_id)
+        shippingaddresslist = [customeraddress.shippingaddressid for customeraddress in CustomerShippingaddress.objects.filter(customerid = customer)]
+        context = {"shippingaddresslist" : shippingaddresslist, "customer" : customer}
+        return render(request, self.template_name, context)
+        
+
+class ShippingAddressCreateView(EcomMixin, View):
+    template_name = "shippingaddresscreate.html"
+
+    def get(self, request, *args, **kwargs):
+        form = ShippingAddressCreateForm()
+        context = {"form":form}
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        form = ShippingAddressCreateForm(request.POST)
+        if form.is_valid():
+            cus_id = kwargs['cus_id']
+            customer = Customer.objects.get(id = cus_id)
+            city = form.cleaned_data.get("city")
+            district = form.cleaned_data.get("district")
+            town = form.cleaned_data.get("town")
+            street = form.cleaned_data.get("street")
+            description = form.cleaned_data.get("description")
+            address = Address.objects.create(city = city, district = district, town = town, street = street, description = description)
+            shippingaddress = Shippingaddress.objects.create(addressid = address, note = "")
+            form.instance.customerid = customer
+            form.instance.shippingaddressid = shippingaddress
+            form.save()
+            shippingaddresslist = [customeraddress.shippingaddressid for customeraddress in CustomerShippingaddress.objects.filter(customerid = customer)]
+            context = {"form":form, "shippingaddresslist":shippingaddresslist, "customer" : customer}
+
+        return render(request, "shippingaddresslist.html", context)
+
+class ShippingAddressEditView(EcomMixin, View):
+    template_name = "shippingaddressedit.html"
+
+    def get(self, request, *args, **kwargs):
+        form = ShippingAddressCreateForm()
+        addr_id = kwargs['addr_id']
+        address = Address.objects.get(id = addr_id)
+        form.fields['city'].initial  = address.city
+        form.fields['district'].initial  = address.district
+        form.fields['town'].initial  = address.town
+        form.fields['street'].initial  = address.street
+        form.fields['description'].initial  = address.description
+        context = {"form":form}
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        form = ShippingAddressCreateForm(request.POST)
+        if form.is_valid():
+            cus_id = kwargs['cus_id']
+            addr_id = kwargs['addr_id']
+            customer = Customer.objects.get(id = cus_id)
+            city = form.cleaned_data.get("city")
+            district = form.cleaned_data.get("district")
+            town = form.cleaned_data.get("town")
+            street = form.cleaned_data.get("street")
+            description = form.cleaned_data.get("description")
+            address = Address.objects.get(id = addr_id)
+            address.city = city
+            address.district = district
+            address.town = town
+            address.street = street
+            address.description = description
+            address.save()
+            shippingaddresslist = [customeraddress.shippingaddressid for customeraddress in CustomerShippingaddress.objects.filter(customerid = customer)]
+            context = {"form":form, "shippingaddresslist":shippingaddresslist, "customer" : customer}
+
+        return render(request, "shippingaddresslist.html", context)
+
 class ProductDetailView(View):
 
     def get(self, request, *args, **kwargs):

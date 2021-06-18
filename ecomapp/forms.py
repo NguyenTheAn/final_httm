@@ -50,6 +50,16 @@ class EditProfileForm(forms.ModelForm):
         model = Customer
         fields = ["username", "phonenumber", "email", "full_name", "city", "district","town", "street", "description"]
 
+class ShippingAddressCreateForm(forms.ModelForm):
+    city = forms.CharField(widget=forms.TextInput())
+    district = forms.CharField(widget=forms.TextInput())
+    town = forms.CharField(widget=forms.TextInput())
+    street = forms.CharField(widget=forms.TextInput())
+    description = forms.CharField(widget=forms.TextInput())
+    class Meta:
+        model = CustomerShippingaddress
+        fields = ["city", "district","town", "street", "description"]
+
 class CustomerRegistrationForm(forms.ModelForm):
     username = forms.CharField(widget=forms.TextInput())
     password = forms.CharField(widget=forms.PasswordInput())

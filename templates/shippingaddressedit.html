@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Address{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <h3>Add New Address</h3>
+            <hr>
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{form.as_p}}
+                <button class="btn btn-info">Cập Nhật</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

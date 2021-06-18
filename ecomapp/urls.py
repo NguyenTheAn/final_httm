@@ -36,6 +36,11 @@ urlpatterns = [
 
     path("search/", SearchView.as_view(), name="search"),
     path("edit-profile/<int:usr_id>/", EditProfileView.as_view(), name="editprofile"),
+    path("shipping-address/<int:cus_id>/", ShippingAddressListView.as_view(), name="shippingaddresslist"),
+    path("shipping-address/create/<int:cus_id>/", ShippingAddressCreateView.as_view(), name="shippingaddresscreate"),
+    path("shipping-address/edit/<int:cus_id>/<int:addr_id>/", ShippingAddressEditView.as_view(), name="shippingaddressedit"),
+    path("shipping-address/delete/<int:cus_id>/<int:addr_id>/", ShippingAddressDeleteView.as_view(), name="shippingaddressdelete"),
+    
 
     path("forgot-password/", PasswordForgotView.as_view(), name="passworforgot"),
     path("password-reset/<email>/<token>/",
