@@ -8,33 +8,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-
-
-# import gensim.models.keyedvectors as word2vec
-# from keras.models import load_model
-# import numpy as np
-# model_embedding = word2vec.KeyedVectors.load('./word.model')
-
-# words_label = []
-
-# def pre_process(text):
-#     return text
-
-# def comment_embedding(comment):
-#     max_seq = 200
-#     embedding_size = 128
-#     matrix = np.zeros((max_seq, embedding_size))
-#     words = comment.split()
-#     lencmt = len(words)
-
-#     for i in range(max_seq):
-#         indexword = i % lencmt
-#         if (max_seq - i < lencmt):
-#             break
-#         if(words[indexword] in words_label):
-#             matrix[i] = model_embedding[words[indexword]]
-#     matrix = np.array(matrix)
-#     return matrix
+import flair
+from flair.models import TextClassifier
+from google_trans_new import google_translator  
 
 
 class Account(models.Model):
@@ -198,20 +174,16 @@ class Customerreview(models.Model):
         
         db_table = 'customerreview'
 
-    # @property
-    # def sentiment(self):
-    #     model_sentiment = load_model("models.h5")
-    #     text = pre_process(self.content)
-    #     maxtrix_embedding = np.expand_dims(comment_embedding(text), axis=0)
-    #     maxtrix_embedding = np.expand_dims(maxtrix_embedding, axis=3)
-    #     result = model_sentiment.predict(maxtrix_embedding)
-    #     result = np.argmax(result)
-    #     labeled = {
-    #         0 : "Negative",
-    #         1 : "Neutral",
-    #         2 : "Positive"
-    #     }
-    #     return labeled[result]
+    @property
+    def sentiment(self):
+        translator = google_translator()  
+        translate_text = translator.translate(self.content, lang_tgt='en')  
+        flair_sentiment = TextClassifier.load('en-sentiment')
+        sentence=flair.data.Sentence(translate_text)
+        flair_sentiment.predict(sentence)
+        total_sentiment = sentence.labels
+
+        return total_sentiment[0].value
 
 class Electronic(models.Model):
     devicetype = models.CharField(db_column='DeviceType', max_length=255, blank=True, null=True)  # Field name made lowercase.
@@ -239,6 +211,13 @@ class Feedback(models.Model):
     class Meta:
         
         db_table = 'feedback'
+    
+    @property
+    def relevant(self):
+        text = self.content.lower()
+        if "giao hàng" in text or "đóng gói" in text or "nhân viên" in text:
+            return "non-relevant"
+        return "relevant"
 
 
 class Fullname(models.Model):

@@ -37,7 +37,7 @@
             <h4><b>{{feedback.customerid.userid.fullnameid.fullname}}:</b></h4>
             <textarea readonly = True style = "resize: none;" rows="2" cols="50">{{feedback.content}}</textarea>
             <p><b>Rating: </b>{{feedback.rate}} Star</p>
-            <p><b>Liên Quan/Không Liên Quan: </b>Liên quan</p>
+            <p><b>Liên Quan/Không Liên Quan: </b>{{feedback.relevant}}</p>
             {% endfor %}
         </div>
         <form class="row g-3" action="{% url 'ecomapp:productdetail' product.slug %}" method="POST">

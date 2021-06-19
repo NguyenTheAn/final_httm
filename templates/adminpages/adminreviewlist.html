@@ -25,7 +25,7 @@
                         <td><a href="{% url 'ecomapp:adminreviewdetail' review.id %}">#REVIEW_{{review.id}}</a></td>
                         <td>{{review.customerid.userid.fullnameid.fullname}}</td>
                         <td>{{review.reviewtime}}</td>
-                        <td>Negative</td>
+                        <td>{{review.sentiment}}</td>
                         <td>{{review.isReply}}</td>
             
                     </tr>

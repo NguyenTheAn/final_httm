@@ -14,7 +14,7 @@
             <p><span class="font-weight-bold">Create On: </span> {{rv_obj.reviewtime}}</p>
             <p><span class="font-weight-bold">Customer Information: </span> By {{rv_obj.customerid.userid.fullnameid.fullname}}, {{rv_obj.customerid.userid.contactinfoid.phonenumber}}</p>
             <p><span class="font-weight-bold">Content: </span> {{rv_obj.content}} </p>
-            <p><span class="font-weight-bold">Sentiment : </span> Negative </p>
+            <p><span class="font-weight-bold">Sentiment : </span> {{rv_obj.sentiment}} </p>
             <form action="{% url 'ecomapp:adminreplyreview'  %}" method="POST">
                 {% csrf_token %}
                 <button class="btn btn-info">Reply</button>
