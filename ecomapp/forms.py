@@ -113,6 +113,17 @@ class ProductForm(forms.ModelForm):
         fields = ["producer", "manufacturingdate", "expirydate", "name", "type", "slug", "price", "description", "images"]
 
 class EditProductForm(forms.ModelForm):
+    producer = forms.ModelChoiceField(queryset= Producer.objects.all(), empty_label="-"*20)
+    name = forms.CharField(label = "Product Name")
+    type = forms.CharField(label = "Product Type", widget=forms.Select(choices=TYPE))
+    manufacturingdate = forms.DateField(initial=datetime.date.today)
+    expirydate = forms.DateField(initial=datetime.date.today)
+
+    class Meta:
+        model = Product
+        fields = ["producer", "name", "type", "manufacturingdate", "expirydate"]
+
+class EditItemForm(forms.ModelForm):
     price = forms.IntegerField(required=False)
     description = forms.CharField(widget=forms.Textarea(attrs={'rows':4, 'cols':50}))
     class Meta:

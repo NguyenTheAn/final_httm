@@ -1,0 +1,39 @@
+{% extends "adminpages/adminbase.html" %}
+
+{% block title %}{{product.productid.name}}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3>Sản phẩm: {{product.productid.name}}</h3>
+    <hr>
+    <div class="row">
+        <div class="col-md-4">
+            <img src="{{product.image.url}}" alt="" class="img-fluid">
+            <div class="row">
+                {% for pi in product.productimage_set.all %}
+                <div class="col-md-4 p-3">
+                    <a href="{{pi.image.url}}" target="_blank">
+                        <img src="{{pi.image.url}}" class="img-fluid" style="height: 100px; object-fit: contain;"
+                            alt="">
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-8">
+            <h4>{{product.productid.name}}</h4>
+            <h5>Danh mục: {{product.productid.category}}</h5>
+            <form action="{% url 'ecomapp:adminitemdetail' product.slug %}" method="POST">
+                {% csrf_token %}
+                <h5>Giá: {{form.price}}</h5>
+                <label> {{ form.description.label }}: </label>
+                <br>
+                {{ form.description }}
+                <hr>
+                <button class="btn btn-info"  type="submit" name = "upload" value = "true">Đăng Tải</button>
+                <button class="btn btn-info"  type="submit" name = "upload" value = "false">Ngừng Đăng Tải</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

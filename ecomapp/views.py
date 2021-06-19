@@ -664,6 +664,60 @@ class AdminProductDetailView(View):
 
     def get(self, request, *args, **kwargs):
         form = EditProductForm()
+        pro_id = kwargs['pro_id']
+        product = Product.objects.get(id=pro_id)
+
+        form.fields['producer'].initial  = product.producerid
+        form.fields['name'].initial  = product.name
+        form.fields['manufacturingdate'].initial  = product.manufacturingdate
+        form.fields['expirydate'].initial  = product.expirydate
+        convert = {
+                "Clothes":"1",
+                "Electronic":"2",
+                "Book":"3"
+            }
+        form.fields['type'].initial  = convert[product.type]
+
+        context = {'form': form, "product": product}
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        form = EditProductForm(data=request.POST)
+        if form.is_valid():
+            producer = form.cleaned_data['producer']
+            name = form.cleaned_data['name']
+            manufacturingdate = form.cleaned_data['manufacturingdate']
+            expirydate = form.cleaned_data['expirydate']
+            type = form.cleaned_data['type']
+
+            pro_id = kwargs['pro_id']
+            product = Product.objects.get(id=pro_id)
+            product.producer = producer
+            product.name = name
+            product.manufacturingdate = manufacturingdate
+            product.expirydate = expirydate
+            convert = {
+                "1": "Clothes",
+                "2": "Electronic",
+                "3": "Book"
+            }
+            product.type = convert[type]
+            product.save()
+
+            form.fields['producer'].initial  = product.producerid
+            form.fields['name'].initial  = product.name
+            form.fields['manufacturingdate'].initial  = product.manufacturingdate
+            form.fields['expirydate'].initial  = product.expirydate
+            form.fields['type'].initial  = product.type
+
+            context = {'form': form, "product": product}
+        return render(request, self.template_name, context)
+
+class AdminItemDetailView(View):
+    template_name = "adminpages/adminitemdetail.html"
+
+    def get(self, request, *args, **kwargs):
+        form = EditItemForm()
         url_slug = kwargs['slug']
         product = Item.objects.get(slug=url_slug)
         form.fields['price'].initial  = product.price
@@ -672,7 +726,7 @@ class AdminProductDetailView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        form = EditProductForm(data=request.POST)
+        form = EditItemForm(data=request.POST)
         if form.is_valid():
             price = form.cleaned_data['price']
             description = form.cleaned_data['description']
@@ -698,17 +752,6 @@ class AdminOrderDetailView(AdminRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["allstatus"] = ORDER_STATUS
-        return context
-
-class AdminProductSearchView(TemplateView):
-    template_name = "adminpages/adminsearch.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        kw = self.request.GET.get("keyword")
-        results = Item.objects.filter(
-            Q(productid__name__icontains=kw) | Q(description__icontains=kw))
-        context["results"] = results
         return context
 
 class AdminOrderListView(AdminRequiredMixin, ListView):
@@ -766,11 +809,33 @@ class AdminOrderStatusChangeView(AdminRequiredMixin, View):
         order_obj.save()
         return redirect(reverse_lazy("ecomapp:adminorderdetail", kwargs={"pk": order_id}))
 
-
-class AdminProductListView(AdminRequiredMixin, ListView):
+class AdminProductListView(AdminRequiredMixin, TemplateView):
     template_name = "adminpages/adminproductlist.html"
-    queryset = Item.objects.all().order_by("-id")
-    context_object_name = "allproducts"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        kw = self.request.GET.get("keyword")
+        if kw is not None:
+            queryset = Product.objects.filter(
+                Q(productid__name__icontains=kw) | Q(description__icontains=kw))
+        else:
+            queryset = Product.objects.all().order_by("-id")
+        context["allproducts"] = queryset
+        return context
+
+class AdminItemListView(AdminRequiredMixin, TemplateView):
+    template_name = "adminpages/adminitemlist.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        kw = self.request.GET.get("keyword")
+        if kw is not None:
+            queryset = Item.objects.filter(
+                Q(productid__name__icontains=kw) | Q(description__icontains=kw))
+        else:
+            queryset = Item.objects.all().order_by("-id")
+        context["allproducts"] = queryset
+        return context
 
 class AdminImprotingrecordListView(AdminRequiredMixin, ListView):
     template_name = "adminpages/adminimportingrecordlist.html"
@@ -778,6 +843,16 @@ class AdminImprotingrecordListView(AdminRequiredMixin, ListView):
     context_object_name = "allrecords"
 
 class AdminProductDeleteView(AdminRequiredMixin, View):
+    template_name = "adminpages/adminproductlist.html"
+    def get(self, request, *args, **kwargs):
+        pro_id = self.kwargs["pro_id"]
+        product = Product.objects.get(id = pro_id)
+        product.delete()
+        queryset = Product.objects.all().order_by("-id")
+        context = {"allproducts":queryset}
+        return render(request, self.template_name, context)
+
+class AdminItemDeleteView(AdminRequiredMixin, View):
     template_name = "adminpages/adminproductlist.html"
     def get(self, request, *args, **kwargs):
         queryset = Item.objects.all().order_by("-id")
@@ -802,8 +877,13 @@ class AdminProductCreateView(AdminRequiredMixin, CreateView):
         slug = form.cleaned_data.get("slug")
         price = form.cleaned_data.get("price")
         description = form.cleaned_data.get("description")
+        convert = {
+            "1": "Clothes",
+            "2": "Electronic",
+            "3": "Book"
+        }
         p = Product.objects.create(producerid = producer, manufacturingdate = manufacturingdate, expirydate = expirydate,
-                                    type = prod_type, name = name)
+                                    type = convert[prod_type], name = name)
         images = self.request.FILES.getlist("images")
         ProductCategory.objects.create(categoryid = Category.objects.get(id = int(prod_type)), productid = p)
             

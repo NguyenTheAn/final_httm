@@ -56,7 +56,8 @@ urlpatterns = [
     path("admin-order/<int:pk>/", AdminOrderDetailView.as_view(),
          name="adminorderdetail"),
 
-    path("admin-product-detail/<slug:slug>/", AdminProductDetailView.as_view(), name="adminproductdetail"),
+    path("admin-product-detail/<int:pro_id>/", AdminProductDetailView.as_view(), name="adminproductdetail"),
+    path("admin-item-detail/<slug:slug>/", AdminItemDetailView.as_view(), name="adminitemdetail"),
     path("admin-all-orders/", AdminOrderListView.as_view(), name="adminorderlist"),
 
     path("admin-order-<int:pk>-change/",
@@ -64,12 +65,12 @@ urlpatterns = [
 
     path("admin-product/list/", AdminProductListView.as_view(),
          name="adminproductlist"),
+     path("admin-item/list/", AdminItemListView.as_view(),
+         name="adminitemlist"),
      path("admin-importingrecord/list/", AdminImprotingrecordListView.as_view(),
          name="adminimportingrecordlist"),
      path("admin-product/delete-<int:pro_id>", AdminProductDeleteView.as_view(),
          name="adminproductdelete"),
-     path("admin-product/search/", AdminProductSearchView.as_view(),
-         name="adminproductsearch"),
     path("admin-product/add/", AdminProductCreateView.as_view(),
          name="adminproductcreate"),
 
