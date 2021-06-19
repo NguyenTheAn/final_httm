@@ -8,9 +8,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-import flair
-from flair.models import TextClassifier
-from google_trans_new import google_translator  
+
+# import flair
+# from flair.models import TextClassifier
+# from google_trans_new import google_translator  
 
 
 class Account(models.Model):
@@ -176,14 +177,15 @@ class Customerreview(models.Model):
 
     @property
     def sentiment(self):
-        translator = google_translator()  
-        translate_text = translator.translate(self.content, lang_tgt='en')  
-        flair_sentiment = TextClassifier.load('en-sentiment')
-        sentence=flair.data.Sentence(translate_text)
-        flair_sentiment.predict(sentence)
-        total_sentiment = sentence.labels
+        return "NEGATIVE"
+        # translator = google_translator()  
+        # translate_text = translator.translate(self.content, lang_tgt='en')  
+        # flair_sentiment = TextClassifier.load('en-sentiment')
+        # sentence=flair.data.Sentence(translate_text)
+        # flair_sentiment.predict(sentence)
+        # total_sentiment = sentence.labels
 
-        return total_sentiment[0].value
+        # return total_sentiment[0].value
 
 class Electronic(models.Model):
     devicetype = models.CharField(db_column='DeviceType', max_length=255, blank=True, null=True)  # Field name made lowercase.
