@@ -101,7 +101,7 @@ class ProductForm(forms.ModelForm):
     name = forms.CharField(label = "Product Name")
     type = forms.CharField(label = "Product Type", widget=forms.Select(choices=TYPE))
     slug = forms.SlugField()
-    price = forms.IntegerField(required=False)
+    # price = forms.IntegerField(required=False)
     description = forms.CharField()
     images = forms.FileField(required=False, widget=forms.FileInput(attrs={
         "class": "form-control",

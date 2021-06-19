@@ -875,7 +875,6 @@ class AdminProductCreateView(AdminRequiredMixin, CreateView):
         name = form.cleaned_data.get("name")
         prod_type = form.cleaned_data.get("type")
         slug = form.cleaned_data.get("slug")
-        price = form.cleaned_data.get("price")
         description = form.cleaned_data.get("description")
         convert = {
             "1": "Clothes",
@@ -888,7 +887,6 @@ class AdminProductCreateView(AdminRequiredMixin, CreateView):
         ProductCategory.objects.create(categoryid = Category.objects.get(id = int(prod_type)), productid = p)
             
         form.instance.productid = p
-        form.instance.price = price
         form.instance.description = description
         form.instance.slug = slug
         form.instance.image = images[0]
