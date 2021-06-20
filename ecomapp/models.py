@@ -12,6 +12,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 # import flair
 # from flair.models import TextClassifier
 # from google_trans_new import google_translator  
+# translator = google_translator()  
+# flair_sentiment = TextClassifier.load('en-sentiment')
 
 
 class Account(models.Model):
@@ -178,13 +180,10 @@ class Customerreview(models.Model):
     @property
     def sentiment(self):
         return "NEGATIVE"
-        # translator = google_translator()  
         # translate_text = translator.translate(self.content, lang_tgt='en')  
-        # flair_sentiment = TextClassifier.load('en-sentiment')
         # sentence=flair.data.Sentence(translate_text)
         # flair_sentiment.predict(sentence)
         # total_sentiment = sentence.labels
-
         # return total_sentiment[0].value
 
 class Electronic(models.Model):

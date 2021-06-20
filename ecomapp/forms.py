@@ -110,7 +110,7 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Item
-        fields = ["producer", "manufacturingdate", "expirydate", "name", "type", "slug", "price", "description", "images"]
+        fields = ["producer", "manufacturingdate", "expirydate", "name", "type", "slug", "description", "images"]
 
 class EditProductForm(forms.ModelForm):
     producer = forms.ModelChoiceField(queryset= Producer.objects.all(), empty_label="-"*20)
